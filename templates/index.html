@@ -91,9 +91,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Scraper</h1>
+        <h1>Web & Video Scraper</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Extract text from websites or YouTube video transcripts
+        </p>
         <form method="post">
-            <input type="text" name="url" placeholder="Enter website URL" required>
+            <input type="text" name="url" placeholder="Enter website URL or YouTube video URL" required>
             <button type="submit">Scrape</button>
         </form>
         {% if error %}
