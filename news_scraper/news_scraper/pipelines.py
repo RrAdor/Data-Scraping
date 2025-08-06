@@ -1,111 +1,47 @@
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-# useful for handling different item types with a single interface
-import json
 import pymongo
-from datetime import datetime
-from itemadapter import ItemAdapter
 from urllib.parse import urlparse
-
-
-class NewsScraperPipeline:
-    def process_item(self, item, spider):
-        adapter = ItemAdapter(item)
-        
-        # Add timestamp if not already present
-        if not adapter.get('scraped_at'):
-            adapter['scraped_at'] = datetime.now().isoformat()
-        
-        # Clean headline
-        if adapter.get('headline'):
-            adapter['headline'] = adapter['headline'].strip()
-        
-        # Add portal name from URL if not already present
-        if adapter.get('url') and not adapter.get('portal_name'):
-            domain = urlparse(adapter['url']).netloc
-            adapter['portal_name'] = domain
-        
-        # Clean body text
-        if adapter.get('body'):
-            adapter['body'] = adapter['body'].strip()
-        
-        return item
-
-
-class JsonWriterPipeline:
-    def open_spider(self, spider):
-        self.file = open('scraped_news.json', 'w', encoding='utf-8')
-        self.file.write('[\n')
-        self.first_item = True
-
-    def close_spider(self, spider):
-        self.file.write('\n]')
-        self.file.close()
-        spider.logger.info("News data saved to scraped_news.json")
-
-    def process_item(self, item, spider):
-        if not self.first_item:
-            self.file.write(',\n')
-        else:
-            self.first_item = False
-            
-        line = json.dumps(ItemAdapter(item).asdict(), ensure_ascii=False, indent=2)
-        self.file.write(line)
-        return item
-
-
-class CsvWriterPipeline:
-    def open_spider(self, spider):
-        import csv
-        self.file = open('scraped_news.csv', 'w', newline='', encoding='utf-8')
-        self.fieldnames = ['headline', 'url', 'body', 'portal_name', 'scraped_at']
-        self.writer = csv.DictWriter(self.file, fieldnames=self.fieldnames)
-        self.writer.writeheader()
-
-    def close_spider(self, spider):
-        self.file.close()
-        spider.logger.info("News data saved to scraped_news.csv")
-
-    def process_item(self, item, spider):
-        self.writer.writerow(ItemAdapter(item).asdict())
-        return item
-
-
-class DuplicatesPipeline:
-    def __init__(self):
-        self.seen_urls = set()
-
-    def process_item(self, item, spider):
-        adapter = ItemAdapter(item)
-        url = adapter.get('url')
-        
-        if url:
-            if url in self.seen_urls:
-                spider.logger.info(f"Duplicate item found: {url}")
-                raise DropItem(f"Duplicate item found: {url}")
-            else:
-                self.seen_urls.add(url)
-        
-        return item
-    
+from itemadapter import ItemAdapter
 
 class MongoDBPipeline:
-    def __init__(self):
-        self.mongo_uri = 'mongodb://localhost:27017'
-        self.mongo_db = 'news_scraper_db'
-        self.collection_name = 'articles'
+    def __init__(self, mongo_uri, mongo_db):
+        self.mongo_uri = mongo_uri
+        self.mongo_db = mongo_db
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            mongo_uri=crawler.settings.get('MONGO_URI'),
+            mongo_db=crawler.settings.get('MONGO_DATABASE', 'scrapy_news'),
+        )
 
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
 
+        # Dynamically set collection based on domain
+        if spider.start_urls:
+            parsed_url = urlparse(spider.start_urls[0])
+            domain = parsed_url.netloc.replace('www.', '').replace('.', '_')
+            self.collection_name = f"{domain}_articles"
+        else:
+            self.collection_name = "default_articles"
+
+        self.collection = self.db[self.collection_name]
+        spider.logger.info(f"Using collection: {self.collection_name}")
+
     def close_spider(self, spider):
         self.client.close()
 
     def process_item(self, item, spider):
-        self.db[self.collection_name].insert_one(dict(item))
+        adapter = ItemAdapter(item)
+        
+        # Check for duplicate by URL
+        if adapter.get('url'):
+            existing = self.collection.find_one({'url': adapter['url']})
+            if existing:
+                spider.logger.info(f"Duplicate found. Skipping: {adapter['url']}")
+                return item
+
+        self.collection.insert_one(adapter.asdict())
+        spider.logger.info(f"Inserted into {self.collection_name}: {adapter.get('headline')}")
         return item
