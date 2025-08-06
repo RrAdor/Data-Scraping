@@ -59,9 +59,10 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'news_scraper.pipelines.NewsScraperPipeline': 300,
-    'news_scraper.pipelines.JsonWriterPipeline': 400,
+    'news_scraper.pipelines.NewsScraperPipeline': 300,   # JSON/CSV saving
+    'news_scraper.pipelines.MongoDBPipeline': 400,       # MongoDB saving
 }
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
