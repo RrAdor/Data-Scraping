@@ -58,10 +58,18 @@ EXTENSIONS = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+# ITEM_PIPELINES = {
+#     'news_scraper.pipelines.NewsScraperPipeline': 300,   # JSON/CSV saving
+#     'news_scraper.pipelines.MongoDBPipeline': 400,       # MongoDB saving
+# }
+MONGO_URI = 'mongodb://localhost:27017'
+MONGO_DATABASE = 'scrapy_news'
+
 ITEM_PIPELINES = {
-    'news_scraper.pipelines.NewsScraperPipeline': 300,   # JSON/CSV saving
-    'news_scraper.pipelines.MongoDBPipeline': 400,       # MongoDB saving
+   'news_scraper.pipelines.MongoDBPipeline': 300,
 }
+
+
 
 
 # Enable and configure the AutoThrottle extension (disabled by default)
