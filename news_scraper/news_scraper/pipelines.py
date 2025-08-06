@@ -6,6 +6,7 @@
 
 # useful for handling different item types with a single interface
 import json
+import pymongo
 from datetime import datetime
 from itemadapter import ItemAdapter
 from urllib.parse import urlparse
@@ -89,4 +90,22 @@ class DuplicatesPipeline:
             else:
                 self.seen_urls.add(url)
         
+        return item
+    
+
+class MongoDBPipeline:
+    def __init__(self):
+        self.mongo_uri = 'mongodb://localhost:27017'
+        self.mongo_db = 'news_scraper_db'
+        self.collection_name = 'articles'
+
+    def open_spider(self, spider):
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.mongo_db]
+
+    def close_spider(self, spider):
+        self.client.close()
+
+    def process_item(self, item, spider):
+        self.db[self.collection_name].insert_one(dict(item))
         return item
