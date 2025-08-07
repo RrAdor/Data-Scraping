@@ -1,3 +1,4 @@
+import time
 import pymongo
 from urllib.parse import urlparse
 from itemadapter import ItemAdapter
@@ -18,7 +19,6 @@ class MongoDBPipeline:
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
 
-        # Dynamically set collection based on domain
         if spider.start_urls:
             parsed_url = urlparse(spider.start_urls[0])
             domain = parsed_url.netloc.replace('www.', '').replace('.', '_')
@@ -34,14 +34,16 @@ class MongoDBPipeline:
 
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
-        
-        # Check for duplicate by URL
-        if adapter.get('url'):
-            existing = self.collection.find_one({'url': adapter['url']})
-            if existing:
-                spider.logger.info(f"Duplicate found. Skipping: {adapter['url']}")
-                return item
 
-        self.collection.insert_one(adapter.asdict())
-        spider.logger.info(f"Inserted into {self.collection_name}: {adapter.get('headline')}")
+        if adapter.get('url'):
+            self.collection.update_one(
+                {'url': adapter['url']},
+                {'$set': {
+                    'headline': adapter.get('headline'),
+                    'body': adapter.get('body'),
+                    'timestamp': time.time()
+                }},
+                upsert=True
+            )
+            spider.logger.info(f"Upserted: {adapter.get('headline')}")
         return item
