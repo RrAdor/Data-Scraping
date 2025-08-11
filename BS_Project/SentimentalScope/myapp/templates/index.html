@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SentimentScope - Advanced AI-powered news analysis tool providing accurate sentiment analysis and concise summaries of articles and videos."
+    />
+    <meta name="theme-color" content="#4361ee" />
+    <title>SentimentScope | AI-Powered News Analysis</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href="{% static 'styles/index.css' %} " />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Main navigation">
+      <div class="logo">
+        <i class="fas fa-chart-line" aria-hidden="true"></i>
+        <span>SentimentScope</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" aria-current="page">Home</a>
+        <a href="#about">About</a>
+        <a href="#team">Team</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="auth-buttons">
+        {% if request.session.user_id %}
+        <div class="user-menu">
+          <span class="welcome-text"
+            >Welcome, {{ request.session.user_name }}!</span
+          >
+          <a
+            href="{% url 'profile' %}"
+            class="btn btn-outline"
+            aria-label="Profile"
+          >
+            <i class="fas fa-user"></i> Profile
+          </a>
+          <a
+            href="{% url 'logout' %}"
+            class="btn btn-primary"
+            aria-label="Logout"
+          >
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-outline" aria-label="Login"
+          >Login</a
+        >
+        <a href="{% url 'login' %}" class="btn btn-primary" aria-label="Sign Up"
+          >Sign Up</a
+        >
+        {% endif %}
+      </div>
+    </nav>
+
+    <!-- Enhanced Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1 class="glow-effect">Decipher News Sentiment with AI Precision</h1>
+        <p>
+          Our advanced AI analyzes news articles and videos to provide accurate
+          sentiment analysis and concise summaries, helping you understand the
+          emotional tone behind the content.
+        </p>
+        <div class="hero-buttons">
+          {% if request.session.user_id %}
+          <a
+            href="{% url 'url_analysis' %}"
+            class="btn btn-primary glow-effect"
+          >
+            Get Start for Free
+          </a>
+          {% else %}
+          <a href="{% url 'login' %}" class="btn btn-primary glow-effect">
+            Get Started for free
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Animated background elements -->
+      <div class="floating-elements">
+        <div class="float-item" style="--delay: 0s">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="10" fill="rgba(255,255,255,0.1)" />
+            <circle cx="10" cy="10" r="5" fill="rgba(255,255,255,0.2)" />
+          </svg>
+        </div>
+        <div class="float-item" style="--delay: 2s">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <rect width="15" height="15" fill="rgba(255,255,255,0.1)" />
+            <rect
+              x="3"
+              y="3"
+              width="9"
+              height="9"
+              fill="rgba(255,255,255,0.2)"
+            />
+          </svg>
+        </div>
+        <div class="float-item" style="--delay: 4s">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <polygon points="9,0 18,18 0,18" fill="rgba(255,255,255,0.1)" />
+            <polygon points="9,6 14,16 4,16" fill="rgba(255,255,255,0.2)" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Improved About Website Section -->
+    <section class="about-website" id="about">
+      <div class="about-container">
+        <div class="about-content">
+          <h2>About SentimentScope</h2>
+          <p>
+            SentimentScope is an innovative platform that leverages cutting-edge
+            artificial intelligence to analyze news articles and video content.
+            Our technology goes beyond simple keyword analysis to understand the
+            nuanced emotional tones in media content.
+          </p>
+          <p>
+            By providing accurate sentiment scores and concise summaries, we
+            help businesses, researchers, and curious individuals cut through
+            the noise and understand the true sentiment behind news stories.
+          </p>
+
+          <div class="about-features">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+              </div>
+              <div class="feature-text">
+                <h4>Advanced AI Technology</h4>
+                <p>
+                  Our system continuously learns from new data, improving its
+                  accuracy over time to provide you with the most reliable
+                  sentiment analysis available.
+                </p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="feature-text">
+                <h4>Real-time Analysis</h4>
+                <p>
+                  Process thousands of news sources in real-time to deliver
+                  up-to-the-minute sentiment trends and insights.
+                </p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div class="feature-text">
+                <h4>Bias Detection</h4>
+                <p>
+                  Our algorithms identify potential biases in news reporting,
+                  helping you get a more balanced perspective.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="about-visual">
+          <div class="chart-container">
+            <div class="chart-header">
+              <h3>Sentiment Distribution</h3>
+              <p>Analysis of 10,000 recent news articles</p>
+            </div>
+            <canvas id="sentimentChart"></canvas>
+          </div>
+          <div class="stats-overlay">
+            <div class="stat-item">
+              <div class="stat-number">72<span>%</span></div>
+              <div class="stat-label">Positive</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">18<span>%</span></div>
+              <div class="stat-label">Neutral</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">10<span>%</span></div>
+              <div class="stat-label">Negative</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="section-header">
+        <h2>Our Impact in Numbers</h2>
+        <p>Quantifying our success and reliability</p>
+      </div>
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number">5<span>k+</span></div>
+          <div class="stat-label">Articles Analyzed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">99.9<span>%</span></div>
+          <div class="stat-label">System Uptime</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">98<span>%</span></div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team" id="team">
+      <div class="section-header">
+        <h2>Our Expert Team</h2>
+        <p>The brilliant minds behind SentimentScope's innovative technology</p>
+      </div>
+      <div class="team-members">
+        <div class="member-card">
+          <div class="member-info">
+            <h3>Israt Tabassum Kochy</h3>
+            <p>Data Analyst</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-info">
+            <h3>Ariyana Rubaiaya Chowdhury</h3>
+            <p>AI Specialist</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-info">
+            <h3>Faizah Mehnaz</h3>
+            <p>Frontend Developer</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-info">
+            <h3>Rifah Zakiah</h3>
+            <p>Backend Developer</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-info">
+            <h3>Raiyan Sarwar</h3>
+            <p>Full-Stack Developer</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-info">
+            <h3>Rajaya Rabby Ador</h3>
+            <p>Project Leader</p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-about">
+          <div class="footer-logo">
+            <i class="fas fa-chart-line"></i>
+            <span>SentimentScope</span>
+          </div>
+          <p>
+            Harnessing the power of AI to analyze news sentiment and provide
+            actionable insights for businesses and individuals.
+          </p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#team">Team</a></li>
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h3>Resources</h3>
+          <ul>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">API Reference</a></li>
+            <li><a href="#">Case Studies</a></li>
+            <li><a href="#">Help Center</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact" id="contact">
+          <h3>Contact Us</h3>
+          <p><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh</p>
+          <p><i class="fas fa-phone-alt"></i> +91 9876543210</p>
+          <p><i class="fas fa-envelope"></i> contact@sentimentscope.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; 2025 SentimentScope. All rights reserved. |
+          <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+        </p>
+      </div>
+    </footer>
+    <script src="{% static 'js/index.js' %}"></script>
+  </body>
+</html>

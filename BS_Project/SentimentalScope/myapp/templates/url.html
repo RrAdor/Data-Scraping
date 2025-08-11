@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enter Article URL | SentimentScope</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'styles/url.css' %}" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <a href="{% url 'index' %}" class="logo">
+        <i class="fas fa-chart-line logo-icon"></i>
+        SentimentScope
+      </a>
+      <div class="user-info">
+        <span class="welcome-text">{{ user.full_name }}</span>
+        <a href="{% url 'profile' %}" class="nav-btn">
+          <i class="fas fa-user"></i> Profile
+        </a>
+        <a href="{% url 'logout' %}" class="nav-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="user-welcome">
+        <h2>Hello {{ user.full_name }}!</h2>
+      </div>
+
+      <div class="card">
+        <h1>Analyze Article Sentiment</h1>
+
+        <form method="POST" action="{% url 'url_analysis' %}" id="analyzeForm">
+          {% csrf_token %}
+          <div class="input-container">
+            <label for="url" class="input-label"
+              >Paste article URL to analyze:</label
+            >
+            <input
+              type="url"
+              id="url"
+              name="url"
+              class="url-input"
+              placeholder="https://example.com/news/article"
+              required
+              autofocus
+            />
+          </div>
+
+          <button type="submit" id="analyzeBtn" class="analyze-btn">
+            <i class="fas fa-chart-pie"></i> Analyze Now
+          </button>
+        </form>
+
+        <div class="examples">
+          Try example: <a onclick="useExample()">Economic policy article</a>
+        </div>
+
+        <div class="features">
+          <div class="feature">
+            <i class="fas fa-bolt feature-icon"></i>
+            <span>Instant Analysis</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-chart-bar feature-icon"></i>
+            <span>Detailed Insights</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-file-pdf feature-icon"></i>
+            <span>PDF Reports</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="{% static 'url.js' %}"></script>
+  </body>
+</html>

@@ -1,0 +1,351 @@
+{% load static %} {% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Advanced sentiment analysis and content insights with SentimentScope"
+    />
+    <meta name="theme-color" content="#4361ee" />
+    <title>Content Analyzer | SentimentScope</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'styles/Analyzer.css' %}" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav role="navigation" aria-label="Main navigation">
+      <div class="logo">
+        <i class="fas fa-chart-line" aria-hidden="true"></i>
+        <span>SentimentScope</span>
+      </div>
+      <div class="nav-links">
+        <a href="{% url 'index' %}">Home</a>
+        <a href="{% url 'url_analysis' %}">Analyze</a>
+        <a href="{% url 'index' %}#about">About</a>
+        <a href="{% url 'index' %}#team">Team</a>
+        <a href="{% url 'index' %}#contact">Contact</a>
+      </div>
+      <div class="nav-actions">
+        {% if document_id %}
+        <a href="{% url 'headlines' %}" class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+          Back to Headlines
+        </a>
+        {% else %}
+        <a href="{% url 'url_analysis' %}" class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+          Back to Input
+        </a>
+        {% endif %}
+      </div>
+      <div class="auth-buttons">
+        <div class="user-menu">
+          <span class="welcome-text">{{ user.full_name }}</span>
+          <a
+            href="{% url 'profile' %}"
+            class="btn btn-outline"
+            aria-label="Profile"
+          >
+            <i class="fas fa-user"></i> Profile
+          </a>
+          <a
+            href="{% url 'logout' %}"
+            class="btn btn-primary"
+            aria-label="Logout"
+          >
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+          <i class="fas fa-info-circle"></i>
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Content Analysis Section -->
+      {% if content_to_analyze %}
+      <div class="analysis-header">
+        <h1 class="analysis-title">
+          <i
+            class="fas fa-{% if content_type == 'youtube' %}video{% elif content_type == 'article' %}newspaper{% else %}chart-bar{% endif %}"
+          ></i>
+          Content Analysis
+        </h1>
+
+        {% if content_source %}
+        <div class="content-source">
+          <i class="fas fa-link"></i>
+          <span class="source-label">Source:</span>
+          <a href="{{ content_source }}" target="_blank" class="source-url"
+            >{{ content_source|truncatechars:80 }}</a
+          >
+        </div>
+        {% endif %}
+
+        <div class="content-type-badge">
+          {% if content_type == 'youtube' %}
+          <i class="fab fa-youtube"></i>
+          <span>YouTube Transcript</span>
+          {% elif content_type == 'article' %}
+          <i class="fas fa-newspaper"></i>
+          <span>News Article</span>
+          {% elif content_type == 'portal' %}
+          <i class="fas fa-globe"></i>
+          <span>Portal Content</span>
+          {% else %}
+          <i class="fas fa-edit"></i>
+          <span>Manual Input</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Content Display -->
+      <div class="content-section">
+        <div class="content-header">
+          <h2>
+            <i class="fas fa-file-text"></i>
+            Content for Analysis
+          </h2>
+          <div class="content-actions">
+            <button class="btn btn-secondary" onclick="toggleContent()">
+              <i class="fas fa-eye" id="toggle-icon"></i>
+              <span id="toggle-text">Hide Content</span>
+            </button>
+            <button class="btn btn-primary" onclick="startAnalysis()">
+              <i class="fas fa-play"></i>
+              Start Analysis
+            </button>
+          </div>
+        </div>
+
+        <div class="content-display" id="contentDisplay">
+          {% if content_type == 'youtube' %}
+          <!-- YouTube transcript display -->
+          <div class="youtube-content">
+            <div class="video-info">
+              <h3 class="video-title">
+                <i class="fab fa-youtube"></i>
+                {{ content_data.title }}
+              </h3>
+              <div class="video-meta">
+                <span class="duration">
+                  <i class="fas fa-clock"></i>
+                  Duration: {{ content_data.total_duration|duration_format }}
+                </span>
+                <span class="segments">
+                  <i class="fas fa-list"></i>
+                  Segments: {{ content_data.transcript_segments|length }}
+                </span>
+              </div>
+            </div>
+
+            <div class="transcript-container">
+              <h4><i class="fas fa-closed-captioning"></i> Transcript</h4>
+              <div class="transcript-segments">
+                {% for segment in content_data.transcript_segments %}
+                <div class="transcript-segment">
+                  <div class="timestamp">{{ segment.timestamp }}</div>
+                  <div class="segment-text">{{ segment.paragraph }}</div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% elif content_type == 'article' or content_type == 'portal' %}
+          <!-- Article content display -->
+          <div class="article-content">
+            <div class="article-info">
+              <h3 class="article-headline">
+                <i class="fas fa-newspaper"></i>
+                {{ content_data.headline }}
+              </h3>
+              <div class="article-meta">
+                <span class="word-count">
+                  <i class="fas fa-file-word"></i>
+                  Words: {{ content_data.word_count }}
+                </span>
+                <span class="reading-time">
+                  <i class="fas fa-clock"></i>
+                  Est. Reading Time: {{
+                  content_data.word_count|div:200|floatformat:0 }} min
+                </span>
+              </div>
+            </div>
+
+            <div class="article-body">
+              <h4><i class="fas fa-align-left"></i> Article Content</h4>
+              <div class="content-text">
+                {{ content_data.content|linebreaksbr }}
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <!-- Manual input or other content -->
+          <div class="manual-content">
+            <h4><i class="fas fa-edit"></i> Manual Input</h4>
+            <div class="content-text">
+              {{ content_to_analyze|linebreaksbr }}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Analysis Results Section -->
+      <div class="analysis-section" id="analysisSection" style="display: none">
+        <div class="analysis-header">
+          <h2>
+            <i class="fas fa-chart-pie"></i>
+            Sentiment Analysis Results
+          </h2>
+        </div>
+
+        <div class="sentiment-overview">
+          <div class="sentiment-card positive">
+            <div class="sentiment-icon">
+              <i class="fas fa-smile"></i>
+            </div>
+            <div class="sentiment-info">
+              <div class="sentiment-label">Positive</div>
+              <div class="sentiment-percentage" id="positivePercentage">0%</div>
+            </div>
+          </div>
+
+          <div class="sentiment-card neutral">
+            <div class="sentiment-icon">
+              <i class="fas fa-meh"></i>
+            </div>
+            <div class="sentiment-info">
+              <div class="sentiment-label">Neutral</div>
+              <div class="sentiment-percentage" id="neutralPercentage">0%</div>
+            </div>
+          </div>
+
+          <div class="sentiment-card negative">
+            <div class="sentiment-icon">
+              <i class="fas fa-frown"></i>
+            </div>
+            <div class="sentiment-info">
+              <div class="sentiment-label">Negative</div>
+              <div class="sentiment-percentage" id="negativePercentage">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detailed-analysis">
+          <div class="analysis-tabs">
+            <button class="tab-btn active" onclick="showTab('summary')">
+              <i class="fas fa-clipboard-list"></i>
+              Summary
+            </button>
+            <button class="tab-btn" onclick="showTab('keywords')">
+              <i class="fas fa-tags"></i>
+              Keywords
+            </button>
+            <button class="tab-btn" onclick="showTab('insights')">
+              <i class="fas fa-lightbulb"></i>
+              Insights
+            </button>
+          </div>
+
+          <div class="tab-content active" id="summary-tab">
+            <div class="summary-content">
+              <h3>Content Summary</h3>
+              <div id="summaryText">Analysis in progress...</div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="keywords-tab">
+            <div class="keywords-content">
+              <h3>Key Terms & Phrases</h3>
+              <div id="keywordsList">Loading keywords...</div>
+            </div>
+          </div>
+
+          <div class="tab-content" id="insights-tab">
+            <div class="insights-content">
+              <h3>Analysis Insights</h3>
+              <div id="insightsList">Generating insights...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="export-section">
+          <h3>
+            <i class="fas fa-download"></i>
+            Export Results
+          </h3>
+          <div class="export-buttons">
+            <button class="btn btn-outline" onclick="exportToPDF()">
+              <i class="fas fa-file-pdf"></i>
+              Export as PDF
+            </button>
+            <button class="btn btn-outline" onclick="exportToText()">
+              <i class="fas fa-file-alt"></i>
+              Export as Text
+            </button>
+            <button class="btn btn-outline" onclick="shareResults()">
+              <i class="fas fa-share"></i>
+              Share Results
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Section -->
+      <div class="loading-section" id="loadingSection" style="display: none">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Analyzing Content...</div>
+        <div class="loading-subtext">
+          Processing sentiment and extracting insights
+        </div>
+      </div>
+
+      {% else %}
+      <!-- No Content State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h2>No Content to Analyze</h2>
+        <p>
+          Please provide content to analyze from URL scraping or manual input.
+        </p>
+        <div class="empty-actions">
+          <a href="{% url 'url_analysis' %}" class="btn btn-primary">
+            <i class="fas fa-link"></i>
+            Analyze URL
+          </a>
+          {% if user %}
+          <a href="{% url 'headlines' %}" class="btn btn-secondary">
+            <i class="fas fa-list"></i>
+            View Headlines
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Hidden content for processing -->
+    <div id="contentData" style="display: none">{{ content_to_analyze }}</div>
+    <div id="contentType" style="display: none">{{ content_type }}</div>
+
+    <script src="{% static 'js/Analyzer.js' %}"></script>
+  </body>
+</html>
