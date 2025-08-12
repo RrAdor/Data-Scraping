@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News & Video Content Extractor | SentimentScope</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-brand">
+                <div class="logo-icon">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <span class="logo-text">ContentExtractor</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#portal" class="nav-link">Portal Scraper</a>
+                <a href="#single" class="nav-link">Article Extractor</a>
+                <a href="#youtube" class="nav-link">YouTube Transcripts</a>
+                <a href="#results" class="nav-link">Results</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-secondary" onclick="exportAllResults()">
+                    <i class="fas fa-download"></i> Export All
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Home Section -->
+        <section id="home" class="hero-section active-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Extract Content from <span class="gradient-text">Any Source</span>
+                    </h1>
+                    <p class="hero-description">
+                        Powerful tool to extract headlines, full articles from news portals, individual articles, and YouTube video transcripts with advanced AI processing.
+                    </p>
+                    
+                    <div class="feature-cards">
+                        <div class="feature-card" onclick="showSection('portal')">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h3>News Portal Scraper</h3>
+                            <p>Extract multiple headlines and full articles from news portals like BBC, CNN, Prothom Alo, Daily Star</p>
+                            <div class="feature-badge">Multiple Articles</div>
+                        </div>
+                        
+                        <div class="feature-card" onclick="showSection('single')">
+                            <div class="feature-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h3>Single Article Extractor</h3>
+                            <p>Extract complete content from individual news article URLs with advanced text processing</p>
+                            <div class="feature-badge">Single Article</div>
+                        </div>
+                        
+                        <div class="feature-card" onclick="showSection('youtube')">
+                            <div class="feature-icon">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <h3>YouTube Transcripts</h3>
+                            <p>Get timestamped transcripts from YouTube videos in multiple languages with paragraph formatting</p>
+                            <div class="feature-badge">Video Content</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-start">
+                        <div class="batch-input-section">
+                            <h3><i class="fas fa-bolt"></i> Batch Processing</h3>
+                            <textarea id="batchUrls" placeholder="Enter multiple URLs (one per line)&#10;https://www.bbc.com/news&#10;https://www.youtube.com/watch?v=example&#10;https://example.com/article/123" class="batch-textarea"></textarea>
+                            <div class="batch-options">
+                                <div class="batch-settings">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="batchPortals" checked>
+                                        <span>News Portals</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="batchArticles" checked>
+                                        <span>Single Articles</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="batchYoutube" checked>
+                                        <span>YouTube Videos</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="batchFullContent" checked>
+                                        <span>Extract Full Content</span>
+                                    </label>
+                                </div>
+                                <div class="batch-actions">
+                                    <button onclick="batchExtractAll()" class="btn-primary btn-large">
+                                        <i class="fas fa-rocket"></i> Extract All Simultaneously
+                                    </button>
+                                    <button onclick="clearBatchUrls()" class="btn-secondary">
+                                        <i class="fas fa-trash"></i> Clear All
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="single-input-section">
+                            <h3><i class="fas fa-magic"></i> Single URL Processing</h3>
+                            <div class="input-group">
+                                <input type="url" id="quickUrl" placeholder="Paste any URL here to get started..." class="quick-input">
+                                <button onclick="quickExtract()" class="btn-primary">
+                                    <i class="fas fa-magic"></i> Auto Extract
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <p class="quick-help">
+                            <i class="fas fa-info-circle"></i>
+                            Batch mode: Process multiple URLs simultaneously | Single mode: Process one URL at a time
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portal Scraper Section -->
+        <section id="portal" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-globe"></i> News Portal Scraper</h2>
+                    <p>Extract headlines and full articles from news portals</p>
+                </div>
+                
+                <div class="extraction-panel">
+                    <div class="input-section">
+                        <div class="form-group">
+                            <label for="portalUrl">News Portal URL</label>
+                            <input type="url" id="portalUrl" placeholder="e.g., https://www.bbc.com/news" class="form-input">
+                        </div>
+                        
+                        <div class="settings-row">
+                            <div class="form-group">
+                                <label for="maxArticles">Max Articles</label>
+                                <select id="maxArticles" class="form-select">
+                                    <option value="10">10 Articles</option>
+                                    <option value="20" selected>20 Articles</option>
+                                    <option value="50">50 Articles</option>
+                                    <option value="all">All Articles</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="extractFullContent" checked>
+                                    <span>Extract full article content</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button onclick="scrapePortal()" class="btn-primary btn-large">
+                            <i class="fas fa-search"></i> Scrape News Portal
+                        </button>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <div class="supported-portals">
+                            <h3>Supported News Portals</h3>
+                            <div class="portal-list">
+                                <span class="portal-tag">BBC News</span>
+                                <span class="portal-tag">CNN</span>
+                                <span class="portal-tag">Prothom Alo</span>
+                                <span class="portal-tag">The Daily Star</span>
+                                <span class="portal-tag">News24BD</span>
+                                <span class="portal-tag">And many more...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Batch Processing Results -->
+                <div id="batchResults" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <h3><i class="fas fa-rocket"></i> Batch Processing Results</h3>
+                        <div class="results-actions">
+                            <button onclick="exportBatchResults()" class="btn-secondary">
+                                <i class="fas fa-download"></i> Export All JSON
+                            </button>
+                            <button onclick="clearBatchResults()" class="btn-secondary">
+                                <i class="fas fa-trash"></i> Clear Results
+                            </button>
+                        </div>
+                    </div>
+                    <div id="batchProcessingStatus" class="batch-status"></div>
+                    <div id="batchResultsList" class="batch-results-grid"></div>
+                </div>
+                
+                <div id="portalResults" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <h3><i class="fas fa-newspaper"></i> Extracted Articles</h3>
+                        <div class="results-actions">
+                            <button onclick="exportPortalResults()" class="btn-secondary">
+                                <i class="fas fa-download"></i> Export JSON
+                            </button>
+                        </div>
+                    </div>
+                    <div id="portalArticlesList" class="articles-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Single Article Section -->
+        <section id="single" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-alt"></i> Single Article Extractor</h2>
+                    <p>Extract complete content from individual news articles</p>
+                </div>
+                
+                <div class="extraction-panel">
+                    <div class="input-section">
+                        <div class="form-group">
+                            <label for="singleUrl">Article URL</label>
+                            <input type="url" id="singleUrl" placeholder="e.g., https://www.bbc.com/news/world-123456" class="form-input">
+                        </div>
+                        
+                        <button onclick="extractSingleArticle()" class="btn-primary btn-large">
+                            <i class="fas fa-extract"></i> Extract Article
+                        </button>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <div class="extraction-features">
+                            <h3>Extraction Features</h3>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> Clean text extraction</li>
+                                <li><i class="fas fa-check"></i> Headline and body separation</li>
+                                <li><i class="fas fa-check"></i> Multi-language support</li>
+                                <li><i class="fas fa-check"></i> Advanced content filtering</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="singleResults" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <h3><i class="fas fa-file-text"></i> Extracted Article</h3>
+                        <div class="results-actions">
+                            <button onclick="exportSingleResult()" class="btn-secondary">
+                                <i class="fas fa-download"></i> Export JSON
+                            </button>
+                        </div>
+                    </div>
+                    <div id="singleArticleContent" class="single-article"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- YouTube Section -->
+        <section id="youtube" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fab fa-youtube"></i> YouTube Transcript Extractor</h2>
+                    <p>Get timestamped transcripts from YouTube videos</p>
+                </div>
+                
+                <div class="extraction-panel">
+                    <div class="input-section">
+                        <div class="form-group">
+                            <label for="youtubeUrl">YouTube Video URL</label>
+                            <input type="url" id="youtubeUrl" placeholder="e.g., https://www.youtube.com/watch?v=..." class="form-input">
+                        </div>
+                        
+                        <div class="settings-row">
+                            <div class="form-group">
+                                <label for="transcriptLang">Preferred Language</label>
+                                <select id="transcriptLang" class="form-select">
+                                    <option value="auto">Auto Detect</option>
+                                    <option value="bn">Bengali</option>
+                                    <option value="en">English</option>
+                                    <option value="hi">Hindi</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="includeTimestamps" checked>
+                                    <span>Include timestamps</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button onclick="extractYouTubeTranscript()" class="btn-primary btn-large">
+                            <i class="fab fa-youtube"></i> Extract Transcript
+                        </button>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <div class="transcript-features">
+                            <h3>Transcript Features</h3>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i> Multiple language support</li>
+                                <li><i class="fas fa-check"></i> Automatic and manual transcripts</li>
+                                <li><i class="fas fa-check"></i> Paragraph formatting</li>
+                                <li><i class="fas fa-check"></i> Precise timestamps</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="youtubeResults" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <h3><i class="fas fa-closed-captioning"></i> Video Transcript</h3>
+                        <div class="results-actions">
+                            <button onclick="exportYouTubeResult()" class="btn-secondary">
+                                <i class="fas fa-download"></i> Export JSON
+                            </button>
+                        </div>
+                    </div>
+                    <div id="youtubeTranscriptContent" class="transcript-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Overview Section -->
+        <section id="results" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Results Overview</h2>
+                    <p>All your extracted content in one place</p>
+                </div>
+                
+                <div class="results-dashboard">
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalArticles">0</h3>
+                                <p>Articles Extracted</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalTranscripts">0</h3>
+                                <p>Video Transcripts</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalWords">0</h3>
+                                <p>Words Extracted</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="all-results" id="allResultsContainer">
+                        <div class="no-results">
+                            <i class="fas fa-inbox"></i>
+                            <h3>No content extracted yet</h3>
+                            <p>Start by extracting content from news portals, articles, or YouTube videos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="modal">
+        <div class="modal-content loading-content">
+            <div class="loader"></div>
+            <h3 id="loadingText">Processing...</h3>
+            <p id="loadingSubtext">Please wait while we extract the content</p>
+        </div>
+    </div>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="modal">
+        <div class="modal-content results-modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Extraction Results</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
