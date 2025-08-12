@@ -1,17 +1,14 @@
+from datetime import datetime 
 import scrapy
 from urllib.parse import urljoin, urlparse
 import trafilatura
 import time
-from datetime import datetime
-import re
-from youtube_transcript_api import YouTubeTranscriptApi
 from news_scraper.items import NewsItem
-
 
 class NewsSpider(scrapy.Spider):
     name = 'news'
     
-    # Portal configurations (keep your existing configs)
+     # Portal configurations (keep your existing configs)
     portal_configs = {
         'bbc.com': {
             'headline_selectors': [
@@ -225,44 +222,15 @@ class NewsSpider(scrapy.Spider):
         else:
             self.logger.warning(f"Failed to fetch URL content: {url}")
         return None, None
-
     def parse(self, response):
-        """Parse the main news portal page or YouTube video"""
-        # Check if this is a YouTube video URL
-        video_id = self.extract_video_id(response.url)
-        if video_id:
-            self.logger.info(f"Processing YouTube video: {response.url}")
-            transcript = self.get_youtube_transcript(video_id)
-            if transcript:
-                news_data = NewsItem()
-                news_data['headline'] = f"YouTube Video: {video_id}"
-                news_data['url'] = response.url
-                news_data['body'] = "\n".join([t['text'] for t in transcript['transcript']])
-                news_data['type'] = 'video'
-                news_data['scraped_at'] = datetime.now()
-                yield news_data
-            return
-    
-        # Handle article-specific scraping
-        if hasattr(self, 'is_article_scrape') and self.is_article_scrape:
-            self.logger.info(f"Scraping article content from: {response.url}")
-            headline, body = self.extract_headline_and_body(response.url)
-            if headline and body:
-                news_data = NewsItem()
-                news_data['headline'] = headline
-                news_data['url'] = response.url
-                news_data['body'] = body
-                news_data['type'] = 'article'
-                news_data['scraped_at'] = datetime.now()
-                yield news_data
-            return
-    
-        # Original headline scraping logic with improvements
-        self.logger.info(f"Scraping news headlines from: {response.url}")
+        """Parse the main news portal page - only scrape headlines initially"""
+        self.logger.info(f"Scraping news from: {response.url}")
+        self.logger.info("=" * 60)
+        
         config = self.get_portal_config(response.url)
         news_items = []
         
-        # Try different selectors to find headlines with links
+        # Extract headlines and links (same as before)
         for link_selector in config['link_selectors']:
             links = response.css(link_selector)
             if links:
@@ -284,8 +252,8 @@ class NewsSpider(scrapy.Spider):
                             }
                             news_items.append(news_item)
                 break
-    
-        # If no links found with text, try to extract from parent elements
+        
+        # If still no links found, try to find headlines without links
         if not news_items:
             for link_selector in config['link_selectors']:
                 links = response.css(link_selector)
@@ -315,40 +283,28 @@ class NewsSpider(scrapy.Spider):
                     if news_items:
                         break
 
-        # If still no links found, try to find headlines without links
-        if not news_items:
-            for headline_selector in config['headline_selectors']:
-                headlines = response.css(headline_selector)
-                if headlines:
-                    for headline in headlines:
-                        headline_text = headline.css('::text').get()
-                        if headline_text:
-                            headline_text = headline_text.strip()
-                        
-                        if headline_text and len(headline_text) > 10:
-                            news_item = {
-                                'headline': headline_text,
-                                'url': None,
-                                'type': 'headline',
-                                'portal': response.url,
-                                'scraped_at': datetime.now()
-                            }
-                            news_items.append(news_item)
-                    if news_items:
-                        break
-
         if not news_items:
             self.logger.warning("No news items found. The website structure might have changed.")
             return
 
-        self.logger.info(f"Found {len(news_items)} news items")
-        
-        for item in news_items:
-            news_data = NewsItem()
-            news_data.update(item)
-            yield news_data
-            time.sleep(2)  # Respectful delay between requests
+        self.logger.info(f"Found {len(news_items)} news items\n")
 
-    def closed(self, reason):
-        """Called when spider closes"""
-        self.logger.info(f"Spider closed: {reason}")
+        # Process each news item - ONLY STORE HEADLINE AND URL NOW
+        for i, item in enumerate(news_items):
+            self.logger.info(f"{i+1}. HEADLINE: {item['headline']}")
+            
+            news_data = NewsItem()
+            news_data['headline'] = item['headline']
+            news_data['url'] = item['url']
+            news_data['body'] = None  # Will be None initially
+            
+            if item['url']:
+                self.logger.info(f"   URL: {item['url']}")
+                # DON'T extract full content here anymore
+            
+            self.logger.info("-" * 50)
+            
+            # Add respectful delay
+            time.sleep(2)
+            
+            yield news_data

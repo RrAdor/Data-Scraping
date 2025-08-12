@@ -1,10 +1,9 @@
-
 from django.urls import path
-from . import views
+from .views import HomeView, ScrapePortalView, HeadlinesView, ArticleView
 
 urlpatterns = [
-    path('', views.HomeView.as_view(), name='home'),
-    path('scrape/', views.ScrapePortalView.as_view(), name='scrape_portal'),
-    path('headlines/<str:portal>/', views.HeadlinesView.as_view(), name='headlines'),
-    path('article/', views.ArticleView.as_view(), name='article'),
+    path('', HomeView.as_view(), name='home'),
+    path('scrape/', ScrapePortalView.as_view(), name='scrape_portal'),
+    path('headlines/<str:portal>/', HeadlinesView.as_view(), name='headlines'),
+    path('article/', ArticleView.as_view(), name='article'),
 ]

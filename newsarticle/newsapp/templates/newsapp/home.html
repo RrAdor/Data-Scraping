@@ -1,47 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <div class="card shadow-sm mb-5">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Scrape News Portal</h2>
-                <form method="POST" class="row g-3">
-                    {% csrf_token %}
-                    <div class="col-md-9">
-                        <input type="url" name="url" class="form-control form-control-lg" 
-                               placeholder="Enter news portal URL (e.g., https://bbc.com)" required>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="bi bi-cloud-download"></i> Scrape
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<h1>News Portal Scraper</h1>
 
-        {% if news_portals %}
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h3 class="card-title mb-4">Recently Scraped Portals</h3>
-                <div class="row">
-                    {% for portal in news_portals %}
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'headlines' portal=portal %}" class="text-decoration-none">
-                            <div class="card portal-card h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ portal|replace:"_|." }}</h5>
-                                    <p class="card-text text-muted">Click to view headlines</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
+<form method="post" action="{% url 'scrape_portal' %}">
+    {% csrf_token %}
+    <input type="url" name="url" placeholder="Enter news portal URL" required>
+    <button type="submit">Scrape Headlines</button>
+</form>
+
+<h2>Recent Headlines</h2>
+<ul>
+    {% for headline in recent_headlines %}
+    <li>
+        <a href="{% url 'article' %}?url={{ headline.url|urlencode }}">
+            {{ headline.headline }}
+        </a> ({{ headline.url|truncatechars:30 }})
+    </li>
+    {% empty %}
+    <li>No headlines found. Scrape a news portal first.</li>
+    {% endfor %}
+</ul>
+
+<h2>Available Portals</h2>
+<ul>
+    {% for portal in portals %}
+    <li><a href="{% url 'headlines' portal=portal %}">{{ portal }}</a></li>
+    {% empty %}
+    <li>No portals scraped yet</li>
+    {% endfor %}
+</ul>
 {% endblock %}

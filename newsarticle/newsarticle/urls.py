@@ -1,15 +1,7 @@
-
-from django.urls import path
-from newsapp.views import (
-    HomeView,
-    ScrapePortalView,
-    HeadlinesView,
-    ArticleView
-)
+from django.contrib import admin
+from django.urls import path, include
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
-    path('scrape/', ScrapePortalView.as_view(), name='scrape_portal'),
-    path('headlines/<str:portal>/', HeadlinesView.as_view(), name='headlines'),
-    path('article/', ArticleView.as_view(), name='article'),
+    path('', include('newsapp.urls')),  # Include your app's URLs
+   
 ]

@@ -1,42 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <a href="{% url 'home' %}" class="btn btn-outline-secondary mb-3">Back to list</a>
-    
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ article.headline|default:"No headline available" }}</h2>
-            <div class="d-flex justify-content-between">
-                <small class="text-muted">{{ article.scraped_at|date:"Y-m-d H:i" }}</small>
-                <span class="badge bg-{{ article.type|default:'article' == 'article'|yesno:'info,success' }}">
-                    {{ article.type|default:"article"|title }}
-                </span>
-            </div>
-        </div>
-        <div class="card-body">
-            {% if article.type == 'video' %}
-                {% with video_id=article.url|slice:"-11:" %}
-                <div class="ratio ratio-16x9 mb-4">
-                    <iframe src="https://www.youtube.com/embed/{{ video_id }}" 
-                            allowfullscreen></iframe>
-                </div>
-                {% endwith %}
-            {% endif %}
-            
-            <p><a href="{{ article.url }}" target="_blank">Original URL</a></p>
-            
-            <div class="article-content mt-4">
-                {% if article.type == 'video' %}
-                    <h4>Transcript:</h4>
-                    <div class="p-3 bg-light rounded">
-                        {{ article.body|default:"No transcript available"|linebreaks }}
-                    </div>
-                {% else %}
-                    {{ article.body|default:"No content available"|linebreaks }}
-                {% endif %}
-            </div>
-        </div>
-    </div>
+<h1>{{ article.headline }}</h1>
+<p><a href="{{ article.url }}" target="_blank">Original Article</a></p>
+
+<div class="article-content">
+    {% if article.body %}
+        {{ article.body|linebreaks }}
+    {% else %}
+        <p>Content not available yet. Please try again later.</p>
+    {% endif %}
 </div>
+
+<a href="{% url 'headlines' portal=portal %}">Back to Headlines</a>
 {% endblock %}

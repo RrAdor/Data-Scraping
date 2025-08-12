@@ -56,14 +56,15 @@ EXTENSIONS = {
     'scrapy.extensions.telnet.TelnetConsole': None,
 }
 
-
-
 ITEM_PIPELINES = {
-    'news_scraper.pipelines.MongoDBPipeline': 300,
+    'news_scraper.pipelines.MongoDBPipeline': 300,      # Runs first for headlines
+    'news_scraper.pipelines.FullContentPipeline': 400,  # Runs for full content
 }
 
 MONGO_URI = 'mongodb://localhost:27017'
 MONGO_DATABASE = 'scrapy_news'
+
+
 
 # Django integration
 # import os

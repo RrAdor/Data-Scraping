@@ -41,22 +41,22 @@ ROOT_URLCONF = 'newsarticle.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # This line is crucial
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',  # For messages
-                'django.template.context_processors.static',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
 
 # MongoDB Configuration
+# MongoDB Configuration
 MONGO_URI = 'mongodb://localhost:27017'
-MONGO_DB = 'news_scraper'
-MONGO_COLLECTION = 'articles'
+MONGO_DB = 'scrapy_news'  # Should match your Scrapy settings
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
