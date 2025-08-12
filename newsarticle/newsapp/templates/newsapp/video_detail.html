@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Video Transcript</li>
+                    </ol>
+                </nav>
+
+                <h1 class="card-title mb-3">{{ article.headline }}</h1>
+                
+                <div class="ratio ratio-16x9 mb-4">
+                    <iframe src="https://www.youtube.com/embed/{{ article.video_id }}" 
+                            allowfullscreen></iframe>
+                </div>
+
+                <h3 class="mt-4 mb-3">Transcript</h3>
+                <div class="transcript-content bg-light p-3 rounded">
+                    {{ article.body|linebreaks }}
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <a href="{{ article.url }}" target="_blank" class="btn btn-outline-primary">
+                        Watch on YouTube
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

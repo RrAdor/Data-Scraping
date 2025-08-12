@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Headlines from {{ portal_display }}</h2>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                Back to Home
+            </a>
+        </div>
+
+        <div class="list-group">
+            {% for headline in headlines %}
+            <a href="{% url 'article' %}?url={{ headline.url|urlencode }}" 
+               class="list-group-item list-group-item-action headline-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ headline.headline }}</h5>
+                    <small class="text-muted">{{ headline.scraped_at|date:"M d, Y H:i" }}</small>
+                </div>
+                <small class="text-muted">{{ headline.url|truncatechars:60 }}</small>
+            </a>
+            {% empty %}
+            <div class="alert alert-warning">No headlines found for this portal.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
