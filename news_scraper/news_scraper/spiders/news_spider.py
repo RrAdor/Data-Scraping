@@ -53,6 +53,7 @@ class NewsSpider(scrapy.Spider):
         },
         'thedailystar.net': {
             'headline_selectors': [
+                'h1.title',
                 'h2.title',
                 'h3.title',
                 '.article-title',
