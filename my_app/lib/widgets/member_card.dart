@@ -27,7 +27,7 @@ class MemberCard extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center),
           SizedBox(height: 4),
-          Text(role, style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+          Text(role, style: const TextStyle(fontSize:13), textAlign: TextAlign.center),
         ],
       ),
     );

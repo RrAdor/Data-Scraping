@@ -16,7 +16,7 @@ class TeamMemberCard extends StatelessWidget {
     return Card(
       elevation: 3,
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(8),
         child: Column(
           children: [
             CircleAvatar(
@@ -30,7 +30,7 @@ class TeamMemberCard extends StatelessWidget {
                 textAlign: TextAlign.center),
             SizedBox(height: 8),
             Text(role,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(fontSize: 12, color: Colors.indigoAccent,fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center),
             SizedBox(height: 16),
             Row(

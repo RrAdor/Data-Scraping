@@ -40,40 +40,40 @@ class AboutScreen extends StatelessWidget {
                 FeatureCard(
                     icon: Icons.shield,
                     title: "Bias Detection",
-                    description: "Identify potential biases in reporting."),
+                    description: "Identify potential biases in reporting and journalism."),
               ],
             ),
             SizedBox(height: 20),
             // Sentiment Distribution Chart
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Sentiment Distribution",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                  Text("Analysis of 10,000 recent news articles"),
-                  SizedBox(height: 10),
-                  Container(
-                    height: 200,
-                    child: SentimentChart(),
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      StatItem(number: "72%", label: "Positive"),
-                      StatItem(number: "18%", label: "Neutral"),
-                      StatItem(number: "10%", label: "Negative"),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: EdgeInsets.all(16),
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.grey[300]!),
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text("Sentiment Distribution",
+            //           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            //       Text("Analysis of 10,000 recent news articles"),
+            //       SizedBox(height: 10),
+            //       Container(
+            //         height: 200,
+            //         child: SentimentChart(),
+            //       ),
+            //       SizedBox(height: 10),
+            //       Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //         children: [
+            //           StatItem(number: "72%", label: "Positive"),
+            //           StatItem(number: "18%", label: "Neutral"),
+            //           StatItem(number: "10%", label: "Negative"),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

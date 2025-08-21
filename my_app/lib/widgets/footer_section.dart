@@ -16,7 +16,7 @@ class FooterSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
+      width: 105,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

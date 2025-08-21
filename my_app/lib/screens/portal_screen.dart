@@ -12,10 +12,6 @@ class PortalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Portal"),
-        backgroundColor: AppColors.primary,
-      ),
       body: ListView.builder(
         itemCount: headlines.length,
         itemBuilder: (context, index) {
@@ -35,6 +31,10 @@ class PortalScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+      appBar: AppBar(
+        title: Text("Portal"),
+        backgroundColor: AppColors.primary,
       ),
     );
   }
